@@ -1,0 +1,10 @@
+{
+  "type": "BPE",
+  "vocab_size": 300,
+  "special_tokens": {
+    "<PAD>": 0,
+    "<UNK>": 1,
+    "<START>": 2,
+    "<END>": 3
+  }
+}

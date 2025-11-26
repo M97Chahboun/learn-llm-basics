@@ -1,5 +1,8 @@
 import numpy as np
-import random
+import pickle
+import json
+from pathlib import Path
+
 
 class SimpleTokenizer:
     def __init__(self):
@@ -18,6 +21,22 @@ class SimpleTokenizer:
     def encode(self, text):
         words = text.lower().split()
         return [self.word_to_id.get(w, 0) for w in words]
+
+    def save(self, filepath):
+        """Save tokenizer to file"""
+        data = {"word_to_id": self.word_to_id, "id_to_word": self.id_to_word}
+        with open(filepath, "w") as f:
+            json.dump(data, f)
+        print(f"✓ Tokenizer saved to {filepath}")
+
+    def load(self, filepath):
+        """Load tokenizer from file"""
+        with open(filepath, "r") as f:
+            data = json.load(f)
+        self.word_to_id = data["word_to_id"]
+        # Convert string keys back to integers
+        self.id_to_word = {int(k): v for k, v in data["id_to_word"].items()}
+        print(f"✓ Tokenizer loaded from {filepath}")
 
 
 # Simple n-gram model with neural network
@@ -104,6 +123,61 @@ class NGramLLM:
 
         return loss
 
+    def save(self, filepath):
+        """Save model weights to file"""
+        model_data = {
+            "vocab_size": self.vocab_size,
+            "context_size": self.context_size,
+            "embed_dim": self.embed_dim,
+            "embeddings": [emb.tolist() for emb in self.embeddings],
+            "W_hidden": self.W_hidden.tolist(),
+            "b_hidden": self.b_hidden.tolist(),
+            "W_out": self.W_out.tolist(),
+            "b_out": self.b_out.tolist(),
+        }
+        with open(filepath, "wb") as f:
+            pickle.dump(model_data, f)
+        print(f"✓ Model saved to {filepath}")
+
+    def load(self, filepath):
+        """Load model weights from file"""
+        with open(filepath, "rb") as f:
+            model_data = pickle.load(f)
+
+        self.vocab_size = model_data["vocab_size"]
+        self.context_size = model_data["context_size"]
+        self.embed_dim = model_data["embed_dim"]
+        self.embeddings = [np.array(emb) for emb in model_data["embeddings"]]
+        self.W_hidden = np.array(model_data["W_hidden"])
+        self.b_hidden = np.array(model_data["b_hidden"])
+        self.W_out = np.array(model_data["W_out"])
+        self.b_out = np.array(model_data["b_out"])
+        print(f"✓ Model loaded from {filepath}")
+
+    def generate_text(self, tokenizer, start_text, max_words=10, temperature=1.0):
+        """Generate text by predicting next words"""
+        words = start_text.lower().split()
+
+        for _ in range(max_words):
+            # Get context
+            context = tokenizer.encode(" ".join(words[-self.context_size :]))
+
+            # Predict next word
+            probs, _, _, _ = self.forward(context)
+
+            # Apply temperature
+            if temperature != 1.0:
+                probs = np.power(probs, 1.0 / temperature)
+                probs = probs / np.sum(probs)
+
+            # Sample from distribution
+            next_id = np.random.choice(len(probs), p=probs)
+            next_word = tokenizer.id_to_word[next_id]
+
+            words.append(next_word)
+
+        return " ".join(words)
+
 
 # Training data
 training_data = [
@@ -140,19 +214,21 @@ vocab_size = len(tokenizer.word_to_id)
 
 print(f"\nVocabulary size: {vocab_size} words")
 print(f"Training sentences: {len(training_data)}")
-print("Context window: 3 words")
+print(f"Context window: 3 words")
 
 # Model
 model = NGramLLM(vocab_size, context_size=3, embed_dim=32)
-print("\nModel: Position-aware N-gram Neural Network")
-print("  - 3 position-specific embedding matrices")
-print("  - Hidden layer: 96 → 96 units")
+print(f"\nModel: Position-aware N-gram Neural Network")
+print(f"  - 3 position-specific embedding matrices")
+print(f"  - Hidden layer: 96 → 96 units")
 print(f"  - Output layer: 96 → {vocab_size}")
 
 # Training
 print("\n" + "=" * 60)
 print("TRAINING")
 print("=" * 60)
+
+import random
 
 epochs = 150
 
@@ -224,3 +300,41 @@ for context_text in test_cases:
 print("\n" + "=" * 60)
 print("✅ TRAINING COMPLETE!")
 print("=" * 60)
+print("\nKey improvements:")
+print("✓ Position-specific embeddings (word meaning varies by position)")
+print("✓ Proper context concatenation (maintains word order)")
+print("✓ Deeper training (150 epochs)")
+print("✓ Learning rate scheduling")
+print("✓ Context actually influences predictions now!")
+print("\nTry different contexts to see how predictions change!")
+
+# Save the model
+print("\n" + "=" * 60)
+print("SAVING MODEL")
+print("=" * 60)
+
+# Create models directory
+Path("models").mkdir(exist_ok=True)
+
+# Save model and tokenizer
+model.save("models/llm_model.pkl")
+tokenizer.save("models/tokenizer.json")
+
+print("\n📁 Model files saved in ./models/ directory")
+
+# Text generation demo
+print("\n" + "=" * 60)
+print("TEXT GENERATION DEMO")
+print("=" * 60)
+
+generation_prompts = ["the cat", "dogs like", "the park"]
+
+print("\n🎲 Generating text with temperature=0.8 (creative)")
+for prompt in generation_prompts:
+    generated = model.generate_text(tokenizer, prompt, max_words=6, temperature=0.8)
+    print(f"   '{prompt}' → '{generated}'")
+
+print("\n" + "=" * 60)
+print("✅ ALL DONE!")
+print("=" * 60)
+print("\nTo use the saved model later, run: python load_and_use_model.py")

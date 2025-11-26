@@ -3,7 +3,6 @@ Quick demonstration of BPE advantages
 Run this after training the BPE model
 """
 
-import re
 from pathlib import Path
 import json
 
@@ -223,11 +222,11 @@ BPE Tokenizer:
 
             # Check if known
             if word in simple_vocab:
-                print(f"  ✓ This word was in training data")
+                print("  ✓ This word was in training data")
             else:
-                print(f"  ⚠ This word was NOT in training data")
-                print(f"     Simple → ❌ Lost meaning (<UNK>)")
-                print(f"     BPE    → ✅ Preserved meaning (subwords)")
+                print("  ⚠ This word was NOT in training data")
+                print("     Simple → ❌ Lost meaning (<UNK>)")
+                print("     BPE    → ✅ Preserved meaning (subwords)")
             print()
 
         except KeyboardInterrupt:

@@ -63,7 +63,7 @@ class BPETokenizer:
                 word_freqs[word_with_marker] += 1
 
         if verbose:
-            print(f"\nStep 1: Pre-tokenization")
+            print("\nStep 1: Pre-tokenization")
             print(f"  - Unique words: {len(word_freqs)}")
             print(
                 f"  - Example: 'cat' → '{list(word_freqs.keys())[0] if word_freqs else 'c a t </w>'}'"
@@ -78,7 +78,7 @@ class BPETokenizer:
         base_vocab = list(self.special_tokens.keys()) + sorted(list(vocab))
 
         if verbose:
-            print(f"\nStep 2: Initial vocabulary")
+            print("\nStep 2: Initial vocabulary")
             print(f"  - Base characters: {len(vocab)}")
             print(f"  - With special tokens: {len(base_vocab)}")
             print(f"  - Sample: {base_vocab[:20]}")
@@ -119,7 +119,7 @@ class BPETokenizer:
             self.id_to_token[idx] = token
 
         if verbose:
-            print(f"\nStep 4: Final vocabulary")
+            print("\nStep 4: Final vocabulary")
             print(f"  - Total tokens: {len(self.token_to_id)}")
             print(f"  - Merges learned: {len(self.merges)}")
             print(f"  - Sample subwords: {list(self.token_to_id.keys())[10:20]}")
@@ -208,7 +208,7 @@ class BPETokenizer:
         print(f"\n✅ Tokenizer saved to {directory}/")
         print(f"   - vocab.json ({len(self.token_to_id)} tokens)")
         print(f"   - merges.json ({len(self.merges)} merges)")
-        print(f"   - tokenizer_config.json")
+        print("   - tokenizer_config.json")
 
     def load(self, directory):
         """Load tokenizer from directory"""

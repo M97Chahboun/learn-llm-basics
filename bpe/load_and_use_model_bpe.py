@@ -3,7 +3,6 @@ import pickle
 import json
 import re
 from pathlib import Path
-from collections import defaultdict
 
 
 class BPETokenizer:
@@ -177,8 +176,8 @@ def main():
     tokenizer = BPETokenizer().load("models/bpe_tokenizer")
     model = NGramLLM().load("models/llm_model_bpe.pkl")
 
-    print(f"\nModel Info:")
-    print(f"  - Tokenizer type: BPE (Byte Pair Encoding)")
+    print("\nModel Info:")
+    print("  - Tokenizer type: BPE (Byte Pair Encoding)")
     print(f"  - Vocabulary size: {model.vocab_size} tokens")
     print(f"  - Context window: {model.context_size} tokens")
     print(f"  - Embedding dimension: {model.embed_dim}")
@@ -282,7 +281,7 @@ def main():
             else:
                 # Default to prediction
                 predictions = model.predict_next_token(tokenizer, user_input, top_k=5)
-                print(f"\n📝 Next token predictions:")
+                print("\n📝 Next token predictions:")
                 for i, (token, prob) in enumerate(predictions, 1):
                     display_token = token.replace("</w>", "_")
                     print(f"   {i}. {display_token:15s} ({prob:.3f})")

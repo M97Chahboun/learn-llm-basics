@@ -127,7 +127,7 @@ def main():
     tokenizer = SimpleTokenizer().load("models/tokenizer.json")
     model = NGramLLM().load("models/llm_model.pkl")
 
-    print(f"\nModel Info:")
+    print("\nModel Info:")
     print(f"  - Vocabulary size: {model.vocab_size}")
     print(f"  - Context window: {model.context_size} words")
     print(f"  - Embedding dimension: {model.embed_dim}")
@@ -203,7 +203,7 @@ def main():
             else:
                 # Default to prediction
                 predictions = model.predict_next_word(tokenizer, user_input, top_k=5)
-                print(f"\n📝 Next word predictions:")
+                print("\n📝 Next word predictions:")
                 for i, (word, prob) in enumerate(predictions, 1):
                     print(f"   {i}. {word:10s} ({prob:.3f})")
 

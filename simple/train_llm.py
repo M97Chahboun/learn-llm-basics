@@ -2,6 +2,7 @@ import numpy as np
 import pickle
 import json
 from pathlib import Path
+import random
 
 
 class SimpleTokenizer:
@@ -214,21 +215,19 @@ vocab_size = len(tokenizer.word_to_id)
 
 print(f"\nVocabulary size: {vocab_size} words")
 print(f"Training sentences: {len(training_data)}")
-print(f"Context window: 3 words")
+print("Context window: 3 words")
 
 # Model
 model = NGramLLM(vocab_size, context_size=3, embed_dim=32)
-print(f"\nModel: Position-aware N-gram Neural Network")
-print(f"  - 3 position-specific embedding matrices")
-print(f"  - Hidden layer: 96 → 96 units")
+print("\nModel: Position-aware N-gram Neural Network")
+print("  - 3 position-specific embedding matrices")
+print("  - Hidden layer: 96 → 96 units")
 print(f"  - Output layer: 96 → {vocab_size}")
 
 # Training
 print("\n" + "=" * 60)
 print("TRAINING")
 print("=" * 60)
-
-import random
 
 epochs = 150
 

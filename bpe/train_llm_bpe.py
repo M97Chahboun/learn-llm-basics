@@ -4,6 +4,7 @@ import json
 import re
 from pathlib import Path
 from collections import Counter, defaultdict
+import random
 
 
 # BPE Tokenizer (integrated from improved_tokenizer.py)
@@ -329,18 +330,16 @@ print("STEP 2: INITIALIZING NEURAL NETWORK")
 print("=" * 60)
 
 model = NGramLLM(vocab_size, context_size=3, embed_dim=32)
-print(f"\nModel architecture:")
+print("\nModel architecture:")
 print(f"  - Vocabulary size: {vocab_size} tokens (BPE)")
-print(f"  - Context window: 3 tokens")
-print(f"  - Embedding dimension: 32")
+print("  - Context window: 3 tokens")
+print("  - Embedding dimension: 32")
 print(f"  - Hidden layer: {32 * 3} units")
 
 # Training
 print("\n" + "=" * 60)
 print("STEP 3: TRAINING")
 print("=" * 60)
-
-import random
 
 epochs = 150
 
